@@ -45,11 +45,57 @@ function install_vim {
     ln -sf ~/.vim/vimrc ~/.vimrc
 }
 
-install_zsh_config
+function pull_git_repo {
+    if [ ! -d $1 ]
+    then
+        debug "Dir $1 does not exists!"
+    else
+        if [ -d .git ]
+        then
+            git pull
+        fi
+    fi
+}
 
-if [ ! -d $HOME/.vim ]
+function usage {
+    echo "$0 [update] [install]"
+}
+
+function install {
+    install_zsh_config
+
+    if [ ! -d $HOME/.vim ]
+    then
+        install_vim
+    fi
+
+    debug "Dont forget to source $HOME/.zshrc"
+}
+
+function update {
+    debug "Updating configs"
+    pull_git_repo $BASEDIR
+
+    debug "Updating vim"
+    pull_git_repo $HOME/.vim
+}
+
+if [ $# -ne 1 ]
 then
-    install_vim
+    usage
+    exit 1
 fi
 
-debug "Dont forget to source $HOME/.zshrc"
+case $1 in
+    update)
+        update
+        ;;
+    install)
+        install
+        ;;
+    *)
+        usage
+        exit 2
+        ;;
+esac
+exit 1
