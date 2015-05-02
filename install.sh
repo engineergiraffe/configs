@@ -50,10 +50,12 @@ function pull_git_repo {
     then
         debug "Dir $1 does not exists!"
     else
+        pushd $1 > /dev/null
         if [ -d .git ]
         then
             git pull
         fi
+        popd > /dev/null
     fi
 }
 
